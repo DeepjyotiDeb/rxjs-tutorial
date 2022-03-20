@@ -3,32 +3,48 @@ import { Observable as Rx } from "rxjs";
 // console.log("hello 2adc");
 // console.log(Rx);
 
-var observable = new Rx((observer:any) => {
-    observer.next('hey guys')
+var observable = new Rx((observer: any) => {
+    try {
+        observer.next('hey guys')
+        observer.next('observation complete')
+        setInterval(() => {
+            observer.next("i am good")
+        }, 1000)
+        // observer.complete()
+        // observer.next('wont be executed')
+    }
+    catch (err) {
+        observer.error(err)
+    }
 });
+//dis be new
+let observer = observable.subscribe({
+    next: (x: any) => addItem(x),
+    error: (error: any) => addItem(error),
+    complete: () => addItem("completed"),
+})
 
-observable.subscribe((x:any)=> addItem(x));
+setTimeout(() => {
+    observer.unsubscribe();
+}, 5001) //after 5s we unsub
 
-// const addItem = (val:any) => {
+//dis be old
+// observable.subscribe(
+//     (x:any)=> addItem(x),
+//     (error:any) => addItem(error),
+//     () => addItem("completed"),
+// )
+
+// let addItem = (val:any) => { //doesnt work...why?
 //     var node = document.createElement("li");
-//     var textnode = document.createElement(val);
+//     var textnode = document.createTextNode(val);
 //     node.appendChild(textnode);
-//     document.getElementById("output").appendChild(node)
+//     document.querySelector(".output").appendChild(node)
 // }
-function addItem(val:any){
+function addItem(val: any) {
+    // let addItem = function(val:any){
     var node = document.createElement("li");
     var textnode = document.createTextNode(val);
     node.appendChild(textnode);
     document.querySelector(".output").appendChild(node);
 }
-// import the fromEvent operator
-// import { fromEvent } from 'rxjs';
-
-// // grab button reference
-// const button = document.querySelector(".myButton");
-
-// // create an observable of button clicks
-// const myObservable = fromEvent(button, 'click');
-
-// // for now, let's just log the event on each click
-// const subscription = myObservable.subscribe(event => console.log(event));
